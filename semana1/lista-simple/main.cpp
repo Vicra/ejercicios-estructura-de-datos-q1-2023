@@ -34,6 +34,12 @@ public:
     // bool isEmpty();
     void insertNode(int newValue);
     void printList();
+    bool deleteNode(int valueToDelete);
+
+    // TODO: hacer estas funciones para practicar
+    // includes(value) contains(value) = buscar
+    // deleteAt(index)
+    // reverseList()
 };
 
 SimpleList::SimpleList()
@@ -52,7 +58,7 @@ void SimpleList::printList()
         cout << iteratorNode->value << " -> ";
         iteratorNode = iteratorNode->next;
     }
-    cout << "null";
+    cout << "null\n";
 }
 
 void SimpleList::insertNode(int newValue)
@@ -79,6 +85,42 @@ void SimpleList::insertNode(int newValue)
     }
 }
 
+/*
+    retorna true si borra exitosamente
+    retorna false si no encuentra el elemento a borrar
+*/
+bool SimpleList::deleteNode(int valueToDelete) 
+{
+    bool isDeleteComplete = false;
+    // caso base, si es el primer nodo de la lista
+    if(this->first->value == valueToDelete) {
+        this->first = this->first->next;
+        isDeleteComplete = true;
+    }
+
+    // case 2: borrar cualquier elemento de enmedio de la lista
+    Node *iteratorNode = this->first;
+    while (iteratorNode->next != nullptr) {
+        if(iteratorNode->next->value == valueToDelete) {
+            // estoy borrando
+            iteratorNode->next = iteratorNode->next->next;
+            isDeleteComplete = true;
+            break;
+        }
+        iteratorNode = iteratorNode->next;
+    }
+
+    // TODO: check code
+    // caso 3: que pasa si se borra el ultimo?
+    if (isDeleteComplete) {
+        cout << "true\n";
+    } else {
+        cout << "false\n";
+    }
+    return isDeleteComplete;
+}
+
+
 int main(int argc, char const *argv[])
 {
     SimpleList *list = new SimpleList();
@@ -89,8 +131,22 @@ int main(int argc, char const *argv[])
     list->insertNode(3);
     list->insertNode(1);
     list->printList();
-
     // 12 -> 9 -> 3 -> 1 -> null
+
+    list->deleteNode(12);
+    list->printList();
+    // 9 -> 3 -> 1 -> null
+
+    list->insertNode(13);
+    // 9 -> 3 -> 1 -> 13 -> null
+
+    // borrar uno de enmedio
+    list->deleteNode(3);
+    list->printList();
+    // 9 -> 1 -> 13 -> null
+
+    list->deleteNode(5);
+
     // end of code
     delete list;
     return 0;
