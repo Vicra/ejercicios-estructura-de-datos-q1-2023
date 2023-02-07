@@ -50,13 +50,9 @@ public:
     // functions/operations
     void insert(int newValue, int position);
 
-    void printList();
-    int getLength();
-    void reverse();
-
-    // TODO: delete first, delete last
-    void insertNodeAtStart(Node* newNode);
-    void insertAfterNode(Node* referenceNode, Node* newNode);
+   void printList();
+   int getLength();
+   void reverse();
 };
 
 DoubleLinkedList::DoubleLinkedList()
@@ -124,7 +120,7 @@ void DoubleLinkedList::printList()
     }
     cout << "NULL\n";
 
-    cout << "Head: " << this->head->getValue() << " ";
+    cout << "Head: " << this->head->getValue();
     cout << "Tail: " << this->tail->getValue() << "\n";
 }
 
@@ -157,28 +153,6 @@ void DoubleLinkedList::reverse()
     this->head = tmp1;
 }
 
-void DoubleLinkedList::insertNodeAtStart(Node *newNode)
-{
-    if (this->head == nullptr) {
-        this->head = newNode;
-        this->tail = newNode;
-        return;
-    }
-    else {
-        newNode->next = this->head;
-        this->head->prev = newNode;
-        this->head = newNode;
-    }
-}
-
-void DoubleLinkedList::insertAfterNode(Node *referenceNode, Node *newNode)
-{
-    newNode->next = referenceNode->next;
-    newNode->prev = referenceNode;
-
-    referenceNode->next = newNode;
-}
-
 int main(int argc, char const *argv[])
 {
     DoubleLinkedList * list = new DoubleLinkedList();
@@ -190,16 +164,6 @@ int main(int argc, char const *argv[])
 
     list->insert(4, 2);
     // 2 <==> 1 <==> 4 <==> NULL
-    list->printList();
-
-    list->reverse();
-    list->printList();
-
-    // first instance the node
-    cout << "\nadding 5" << "\n";
-    Node* nodeFive = new Node(5);
-    list->insertNodeAtStart(nodeFive);
-    list->insertAfterNode(nodeFive, new Node(6));
     list->printList();
     return 0;
 }
