@@ -52,7 +52,7 @@ void initializeArray(int array[], int n){
 
 int binarySearch(int array[], int x) {
 
-    int low = 0, high = 5;
+    int low = 1, high = 5;
     int mid;
 
     cout << "Low: " << low << endl;
@@ -90,8 +90,8 @@ int main(int argc, char const *argv[])
 
     // insertSorted(array, 100, 4);
     // printArray(array, 100);
-    cout << "Position BinSearch: " << binarySearch(array, 4) << endl << endl;
-    cout << "Position BinSearch: " << binarySearch(array, 5) << endl;
+    cout << binarySearch(array, 4) << endl << endl;
+    cout << binarySearch(array, 5) << endl;
 
     return 0;
 }
