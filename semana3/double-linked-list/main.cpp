@@ -57,6 +57,8 @@ public:
     // TODO: delete first, delete last
     void insertNodeAtStart(Node* newNode);
     void insertAfterNode(Node* referenceNode, Node* newNode);
+
+    void deleteNode(Node* nodeToDelete);
 };
 
 DoubleLinkedList::DoubleLinkedList()
@@ -100,10 +102,8 @@ void DoubleLinkedList::insertAtStart(int newValue)
 void DoubleLinkedList::insertAtEnd(int newValue)
 {
     Node *newNode = new Node(newValue);
-
-    // validar que la lista no este vacia
-    //  TODO: DRY should we put this in a separate fn?
-    if (this->head == nullptr) {
+    if (this->head == nullptr || 
+        (this->head == this->tail)) {
         this->head = newNode;
         this->tail = newNode;
         return;
@@ -118,14 +118,25 @@ void DoubleLinkedList::insertAtEnd(int newValue)
 void DoubleLinkedList::printList()
 {
     Node* iterator = head;
+    if(iterator != nullptr) cout << "NULL<-";
     while(iterator != nullptr){
-        cout << iterator->getValue() << "<==>";
+        cout << iterator->getValue();
         iterator = iterator->next;
-    }
-    cout << "NULL\n";
 
-    cout << "Head: " << this->head->getValue() << " ";
-    cout << "Tail: " << this->tail->getValue() << "\n";
+        if(iterator != nullptr)
+            cout << "<==>";
+    }
+    cout << "->NULL\n";
+
+    if(this->head != nullptr)
+        cout << "Head: " << this->head->getValue() << " ";
+    else 
+        cout << "Head: " << "nullptr" << endl;
+
+    if(this->tail != nullptr)
+        cout << "Tail: " << this->tail->getValue() << "\n\n";
+    else
+        cout << "Tail: " << "nullptr" << endl;
 }
 
 int DoubleLinkedList::getLength()
@@ -179,6 +190,33 @@ void DoubleLinkedList::insertAfterNode(Node *referenceNode, Node *newNode)
     referenceNode->next = newNode;
 }
 
+void DoubleLinkedList::deleteNode(Node *nodeToDelete)
+{
+    Node* temp = nodeToDelete;
+    if(nodeToDelete == this->head){
+        this->head = this->head->next;
+        if(this->head != nullptr)
+            this->head->prev = nullptr;
+
+        // if head is also tail
+        if(nodeToDelete == this->tail){
+            this->tail = this->tail->prev;
+            if(this->tail != nullptr)
+                this->tail->next = nullptr;
+        }
+    }
+    else if(nodeToDelete == this->tail){
+        this->tail = this->tail->prev;
+        if(this->tail != nullptr)
+            this->tail->next = nullptr;
+    }
+    else {
+        nodeToDelete->prev->next = nodeToDelete->next;
+        nodeToDelete->next->prev = nodeToDelete->prev;
+    }
+    delete temp;
+}
+
 int main(int argc, char const *argv[])
 {
     DoubleLinkedList * list = new DoubleLinkedList();
@@ -188,9 +226,9 @@ int main(int argc, char const *argv[])
     // 2 <==> 1 <==> NULL
     list->printList();
 
-    list->insert(4, 2);
+    // list->insert(4, 2);
     // 2 <==> 1 <==> 4 <==> NULL
-    list->printList();
+    // list->printList();
 
     list->reverse();
     list->printList();
@@ -199,7 +237,28 @@ int main(int argc, char const *argv[])
     cout << "\nadding 5" << "\n";
     Node* nodeFive = new Node(5);
     list->insertNodeAtStart(nodeFive);
+    list->insertNodeAtStart(new Node(7));
     list->insertAfterNode(nodeFive, new Node(6));
     list->printList();
+
+    cout << "Deleting head" << endl;
+    list->deleteNode(list->head);
+    list->printList();
+
+    cout << "Deleting tail" << endl;
+    list->deleteNode(list->tail);
+    list->printList();
+
+    cout << "Deleting in middle" << endl;
+    list->deleteNode(list->head->next);
+    list->printList();
+
+    list->deleteNode(list->head);
+    list->printList();
+
+    cout << "Deleting head and tail" << endl;
+    list->deleteNode(list->head);
+    list->printList();
+    delete list;
     return 0;
 }
