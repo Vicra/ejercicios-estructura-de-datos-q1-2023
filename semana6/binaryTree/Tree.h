@@ -49,6 +49,7 @@ inline TreeNode *Tree::search(TreeNode* currentRoot, int key){
     else if (key > currentRoot->getValue()) {
         return search(currentRoot->right, key);
     }
+    return nullptr;
 }
 
 inline int Tree::depth(TreeNode *currentRoot, TreeNode *node, int iterations)
