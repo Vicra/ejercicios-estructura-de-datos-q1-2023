@@ -10,6 +10,7 @@ public:
     ~TreeNode();
 
     int getValue();
+    int setValue(int newValue);
 };
 
 TreeNode::TreeNode(int value)
@@ -26,4 +27,9 @@ TreeNode::~TreeNode()
 inline int TreeNode::getValue()
 {
     return this->value;
+}
+
+inline int TreeNode::setValue(int newValue)
+{
+    return this->value = newValue;
 }

@@ -11,7 +11,9 @@ public:
     Tree(/* args */);
     ~Tree();
 
-    TreeNode* insert(TreeNode *currentRoot, TreeNode* newNode);
+    TreeNode* insert(TreeNode *root, TreeNode* newNode);
+    TreeNode* search(TreeNode* root, int key);
+    TreeNode* deleteNode(TreeNode* root, int key);
 
     TreeNode* mostLeftSon(TreeNode* root);
     TreeNode* mostRightSon(TreeNode* root);
@@ -20,11 +22,9 @@ public:
     void preorder(TreeNode* root);
     void inorder(TreeNode* root);
     void postorden(TreeNode* root);
+    int depth(TreeNode* root, TreeNode* node, int interations);
 
     void print(string prefix, TreeNode* root, bool isLeft);
-    // search
-    TreeNode* search(TreeNode* root, int key);
-    int depth(TreeNode* root, TreeNode* node, int interations);
 };
 
 Tree::Tree(/* args */)
@@ -52,6 +52,49 @@ inline TreeNode *Tree::search(TreeNode* currentRoot, int key){
     return nullptr;
 }
 
+inline TreeNode *Tree::deleteNode(TreeNode *currentRoot, int key)
+{
+    if(currentRoot == nullptr)
+        return currentRoot;
+    
+    // continue iterando || continue la recursion
+    if(key < currentRoot->getValue())
+        currentRoot->left = deleteNode(currentRoot->left, key);
+    else if(key > currentRoot->getValue())
+        currentRoot->right = deleteNode(currentRoot->right, key);
+    else {
+        // ya estoy en el nodo que quiero borrar
+        
+        // CASO 1: no tengo hijos
+        if (currentRoot->left == nullptr && currentRoot->right == nullptr){
+            free(currentRoot);
+            return nullptr;
+        }
+
+        // CASO 2 (A): tengo 1 hijo derecho solamente
+        else if (currentRoot->left == nullptr && currentRoot->right != nullptr) {
+            TreeNode * temp = currentRoot->right;
+            free(currentRoot);
+            return temp;
+        }
+
+        // CASO 2 (B): tengo 1 hijo izquierdo solamente
+        else if (currentRoot->right == nullptr && currentRoot->left != nullptr) {
+            TreeNode * temp = currentRoot->left;
+            free(currentRoot);
+            return temp;
+        }
+
+        // CASO 3: tengo 2 hijos
+        else { 
+            TreeNode* succesor = mostLeftSon(currentRoot->right);
+            currentRoot->setValue(succesor->getValue());
+            currentRoot->right = deleteNode(currentRoot->right, succesor->getValue());
+        }
+    }
+    return currentRoot;
+}
+
 inline int Tree::depth(TreeNode *currentRoot, TreeNode *node, int iterations)
 {
     if(currentRoot == node)
@@ -62,6 +105,7 @@ inline int Tree::depth(TreeNode *currentRoot, TreeNode *node, int iterations)
     if(node->getValue() > currentRoot->getValue()){
         return depth(currentRoot->right, node, iterations + 1);
     }
+    return 0;
 }
 
 inline TreeNode *Tree::insert(TreeNode *currentRoot, TreeNode *newNode)
