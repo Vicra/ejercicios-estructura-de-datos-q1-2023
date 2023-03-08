@@ -10,8 +10,9 @@ int main()
   t->root = t->insert(t->root, 50);
   t->root = t->insert(t->root, 60);
 	
-  t->inorder(t->root);
+  // t->inorder(t->root);
   // t->print("", t->root, false);
+  t->printTree(t->root, nullptr, false);
 
 	return 0;
 }

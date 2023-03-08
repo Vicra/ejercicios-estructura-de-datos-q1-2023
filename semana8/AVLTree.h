@@ -4,6 +4,18 @@
 
 using namespace std;
 
+struct Trunk
+{
+    Trunk *prev;
+    string str;
+ 
+    Trunk(Trunk *prev, string str)
+    {
+        this->prev = prev;
+        this->str = str;
+    }
+};
+
 class AVLTree
 {
 private:  
@@ -11,6 +23,16 @@ private:
   int getBalance(NodeTree *node);
   int height(NodeTree *node);
   int max(int a, int b);
+
+  void showTrunks(Trunk *p)
+  {
+      if (p == nullptr) {
+          return;
+      }
+  
+      showTrunks(p->prev);
+      cout << p->str;
+  }
 
 public:
   NodeTree* root;
@@ -23,6 +45,41 @@ public:
   NodeTree* leftRotate(NodeTree *x);
   void inorder(NodeTree *currentRoot);
   void print(string prefix, NodeTree* root, bool isLeft);
+
+  void printTree(NodeTree* root, Trunk *prev, bool isLeft)
+  {
+      if (root == nullptr) {
+          return;
+      }
+  
+      string prev_str = "    ";
+      Trunk *trunk = new Trunk(prev, prev_str);
+  
+      printTree(root->right, trunk, true);
+  
+      if (!prev) {
+          trunk->str = "———";
+      }
+      else if (isLeft)
+      {
+          trunk->str = ".———";
+          prev_str = "   |";
+      }
+      else {
+          trunk->str = "`———";
+          prev->str = prev_str;
+      }
+  
+      showTrunks(trunk);
+      cout << " " << root->value << endl;
+  
+      if (prev) {
+          prev->str = prev_str;
+      }
+      trunk->str = "   |";
+  
+      printTree(root->left, trunk, false);
+  }
 };
 
 AVLTree::AVLTree()
