@@ -40,11 +40,13 @@ public:
   AVLTree(/* args */);
   ~AVLTree();
 
-  NodeTree* insert(NodeTree* node, int value);
+  NodeTree* insert(NodeTree* root, int value);
+  NodeTree* deleteNode(NodeTree* root, int key);
+  NodeTree* mostLeftSon(NodeTree* root);
   NodeTree* rightRotate(NodeTree *y);
   NodeTree* leftRotate(NodeTree *x);
   void inorder(NodeTree *currentRoot);
-  void print(string prefix, NodeTree* root, bool isLeft);
+  void print(NodeTree* root);
 
   void printTree(NodeTree* root, Trunk *prev, bool isLeft)
   {
@@ -91,26 +93,10 @@ AVLTree::~AVLTree()
 }
 
 
-void AVLTree::print(string prefix, NodeTree *currentRoot, bool isLeft)
+void AVLTree::print(NodeTree *root)
 {
-    if( currentRoot != nullptr )
-    {
-        cout << prefix;
-
-        cout << (isLeft ? "├──" : "└──" );
-
-        // print the value of the node
-        cout << currentRoot->value << endl;
-
-        // enter the next tree level - left and right branch
-        print( prefix + (isLeft ? "│   " : "    "), currentRoot->left, true);
-        print( prefix + (isLeft ? "│   " : "    "), currentRoot->right, false);
-    }
-    else {
-        cout << prefix;
-        cout << (isLeft ? "├─" : "└─" );
-        cout << "nil" << endl;
-    }
+    this->printTree(root, nullptr, false);
+    cout << endl << endl;
 }
 
 
@@ -232,4 +218,97 @@ NodeTree* AVLTree::leftRotate(NodeTree *x)
 
 	// nueva raiz
 	return y;
+}
+
+NodeTree* AVLTree::deleteNode(NodeTree* currentRoot, int valueToDelete)
+{
+    if (currentRoot == nullptr)
+        return currentRoot;
+ 
+    if ( valueToDelete < currentRoot->value )
+        currentRoot->left = deleteNode(currentRoot->left, valueToDelete);
+ 
+    else if( valueToDelete > currentRoot->value )
+        currentRoot->right = deleteNode(currentRoot->right, valueToDelete);
+ 
+    else
+    {
+        // Caso 1 y 2: sin hijos o un hijo
+        if( (currentRoot->left == nullptr) ||
+            (currentRoot->right == nullptr) )
+        {
+            NodeTree *subArbol = currentRoot->left ?
+                         currentRoot->left :
+                         currentRoot->right;
+
+            // Caso 1: Sin hijos
+            if (subArbol == nullptr)
+            {
+                subArbol = currentRoot;
+                currentRoot = nullptr;
+            }
+            else // Caso 2: 1 Hijo
+            // apunto al contenido del subarbol a conservar
+            *currentRoot = *subArbol;
+            free(subArbol);
+        }
+        else
+        {
+            // Caso 3: tengo 2 hijos
+            NodeTree* succesor = mostLeftSon(currentRoot->right);
+            currentRoot->value = succesor->value;
+            currentRoot->right = deleteNode(currentRoot->right,
+                                     succesor->value);
+        }
+    }
+ 
+    // si no hay elementos no es necesario balancear
+    if (currentRoot == NULL)
+        return currentRoot;
+ 
+    currentRoot->height = 1 + max(height(currentRoot->left),
+                           height(currentRoot->right));
+    int balance = getBalance(currentRoot);
+ 
+    // Izquierdo Izquierdo 
+    if (balance > 1 &&
+        getBalance(currentRoot->left) >= 0)
+        return rightRotate(currentRoot);
+ 
+    // Izquierdo Derecho 
+    if (balance > 1 &&
+        getBalance(currentRoot->left) < 0)
+    {
+        currentRoot->left = leftRotate(currentRoot->left);
+        return rightRotate(currentRoot);
+    }
+ 
+    // Derecho Derecho 
+    if (balance < -1 &&
+        getBalance(currentRoot->right) <= 0)
+        return leftRotate(currentRoot);
+ 
+    // Derecho Izquierdo 
+    if (balance < -1 &&
+        getBalance(currentRoot->right) > 0)
+    {
+        currentRoot->right = rightRotate(currentRoot->right);
+        return leftRotate(currentRoot);
+    }
+ 
+    return currentRoot;
+}
+
+
+inline NodeTree *AVLTree::mostLeftSon(NodeTree *currentRoot)
+{
+    if(currentRoot == nullptr) 
+        return currentRoot;
+
+    if(currentRoot->left == nullptr){
+        return currentRoot;
+    }
+    else {
+        return mostLeftSon(currentRoot->left);
+    }
 }
